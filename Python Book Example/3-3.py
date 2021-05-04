@@ -9,9 +9,11 @@ for i in range(n):
     data = list(map(int, input().split()))
     data.sort()
     '''
+    # 아래 코드 대신 max 함수 사용 가능
     if min_value < data[0]:
         min_value = data[0]
     '''
+    # data[0]을 잡기 위해 data.sort()를 하는 대신, min(data)를 사용할 수 있음
     min_value = max(min_value, data[0])
 
 print(min_value)
