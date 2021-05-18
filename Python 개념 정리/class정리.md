@@ -66,3 +66,48 @@ t = Test() # 생성자
 ```
 
 - 생성자로 객체생성을 호출받으면, 먼저 `__new__`를 호출하여 객체를 생성할당하고, `__new__` 메소드가 `__init__` 메소드를 호출하여 객체에서 사용할 초기값들을 초기화하게 됩니다.
+
+**[ 생성자와 초기화 예제 #1 ]**
+
+```python
+# test.py
+class Test:
+	def __init__(self):
+		print('init')
+		super().__init__()
+
+	def __new__(cls):
+		print('new')
+		return super().__new__(cls)
+
+	def number(self):
+		return '123'
+
+# test2.py
+from test import Test
+
+t = Test()
+
+# test2.py 실행 결과
+new
+init
+```
+
+**[ 생성자와 초기화 예제 #2 ]**
+
+```python
+class Test:
+	def __init(self, number):
+		self._number = number
+
+	def number(self):
+		return self._number
+```
+
+- 객체 속성을 초기화합니다. `__new__` 메소드는 자동으로 실행되므로 제거합니다.
+- `__init__` 메소드에 코드를 수정합니다.
+- 아래의 코드에서 self._number로 할당했는데 변수명의 `_`의 의미는 다음과 같습니다.
+    - 내부적으로 사용되는 변수
+    - 파이썬의 기본 키워드와 충돌을 피하기 위한 변수
+    - `_` 관련 네이밍컨벤션 자료
+        - [https://www.python.org/dev/peps/pep-0008/#naming-conventions](https://www.python.org/dev/peps/pep-0008/#naming-conventions)
