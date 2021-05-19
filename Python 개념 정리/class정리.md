@@ -96,12 +96,25 @@ init
 **[ 생성자와 초기화 예제 #2 ]**
 
 ```python
+# test.py
 class Test:
 	def __init(self, number):
 		self._number = number
 
 	def number(self):
 		return self._number
+
+# test2.py
+from test import Test
+
+t = Test(5)
+
+t.number()
+t._number
+
+# test2.py 실행 결과
+5
+5
 ```
 
 - 객체 속성을 초기화합니다. `__new__` 메소드는 자동으로 실행되므로 제거합니다.
