@@ -124,3 +124,8 @@ t._number
     - 파이썬의 기본 키워드와 충돌을 피하기 위한 변수
     - `_` 관련 네이밍컨벤션 자료
         - [https://www.python.org/dev/peps/pep-0008/#naming-conventions](https://www.python.org/dev/peps/pep-0008/#naming-conventions)
+
+접근 제어자(public, private, protected)?
+
+- Python은 기본적으로 다른 언어에 있는 접근제어자(public, private, protected)가 없습니다. 
+- 즉, public이라고 봐도 무방합니다.
