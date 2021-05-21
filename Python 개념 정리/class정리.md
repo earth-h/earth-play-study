@@ -125,7 +125,11 @@ t._number
     - `_` 관련 네이밍컨벤션 자료
         - [https://www.python.org/dev/peps/pep-0008/#naming-conventions](https://www.python.org/dev/peps/pep-0008/#naming-conventions)
 
-접근 제어자(public, private, protected)?
+### **접근 제어자(public, private, protected)?**
 
-- Python은 기본적으로 다른 언어에 있는 접근제어자(public, private, protected)가 없습니다. 
+- Python은 기본적으로 다른 언어에 있는 접근제어자(public, private, protected)가 없습니다.
 - 즉, public이라고 봐도 무방합니다.
+
+### 초기화자(**init**)에 객체의 불변성을 확립해야 한다.
+
+- 일반적으로 초기화자(**init**)에서 객체의 불변성을 확립하는 것이 좋습니다.
