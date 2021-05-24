@@ -57,8 +57,7 @@ def in_order_traversal(self):
 			_in_order_traversal(root.left)
 			print(root.val)
 			_in_order_traversal(root.right)
-	_in_order_traversal(self)
-root)
+	_in_order_traversal(self.root)
 ```
 
 ## 출처
