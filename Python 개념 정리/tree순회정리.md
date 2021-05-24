@@ -4,7 +4,7 @@
 
 전위 순회는 `뿌리 노드 → 왼쪽 서브 트리 → 오른쪽 서브 트리` 순으로 순회합니다.
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/dd71d086-9f7a-4bdb-882c-34fc9ec2d670/.gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/dd71d086-9f7a-4bdb-882c-34fc9ec2d670/.gif)
+![pre-order traversal](https://austingwalters.com/wp-content/uploads/2014/10/binary-tree-1-pre-order-small.gif)
 
 ### pseudo code
 
@@ -24,7 +24,7 @@ def pre_order_traversal(self):
 
 후위 순회는 `왼쪽 서브 트리 → 오른쪽 서브 트리 → 뿌리 노드` 순으로 순회합니다.
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/1a929983-31f4-4f38-9f82-065974e3a2c5/_(1).gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/1a929983-31f4-4f38-9f82-065974e3a2c5/_(1).gif)
+![post-order traversal](https://austingwalters.com/wp-content/uploads/2014/10/binary-tree-1-post-order-small.gif)
 
 ### pseudo code
 
@@ -44,7 +44,7 @@ def post_order_traversal(self):
 
 정위 순회는 `왼쪽 서브 트리 → 뿌리 노드 → 오른쪽 서브 트리` 순으로 순회합니다.
 
-![https://s3-us-west-2.amazonaws.com/secure.notion-static.com/1008d308-d1f0-44ac-b11e-b7cd9298d921/_(2).gif](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/1008d308-d1f0-44ac-b11e-b7cd9298d921/_(2).gif)
+![in-order traversal](https://austingwalters.com/wp-content/uploads/2014/10/binary-tree-1-order-small.gif)
 
 ### pseudo code
 
@@ -63,4 +63,4 @@ root)
 
 ## 출처
 
-[https://austingwalters.com/binary-trees-traversals-everyday-algorithms/](https://austingwalters.com/binary-trees-traversals-everyday-algorithms/)
+[출처](https://austingwalters.com/binary-trees-traversals-everyday-algorithms/)
