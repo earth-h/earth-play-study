@@ -106,17 +106,126 @@ LDAP 서버에는 여러 디렉토리 정보(entry)가 계층적 트리 �
 - Abandon: 직전에 보낸 요청을 취소해달라는 요청으로, 서버가 무시해도 무방
 - Unbind: 더 이상 할 일이 없어 커넥션을 끊기 전에 보내는 명령어로, 서버가 해당 명령을 받으면 해당 클라이언트를 위해 확했던 리소스를 다 해제함
 
-## LDAP 이용 사례
+## LDAP 관련 클래스
 
-조직도가 LDAP으로 관리되고 있는데, 모니터링 툴은 사내에서 직접 만든 것이 아니라 LDAP과 연동되지 않는 알람 시스템을 가지고 있다.
+### LdapContext 클래스
 
-이 때, 퇴사자 발생 시 매번 직접 모니터링 툴에서 퇴사자에 대해 알람 발생하지 않도록 설정을 해주어야 한다.
+`LdapContext ctx = new InitialLdapContext(env, null);`
 
-이를 좀 더 편하게 할 수 있도록 아래 과정을 통해 코드를 작성하고 있다.
+LDAPv3을 실행할 수 있는 컨텍스트를 의미합니다.
 
-1. 모니터링 툴의 알람 사용자 리스트를 사번 리스트 형식으로 가져온다.
-    - 알람 받기에 체크된 사용자에 한해서 가져옴
-2. LDAP에서 1에서 가져온 사번들이 조직도상에 존재하는지 체크한다.
-    - 사번으로 조회하여 해당하는 사용자가 있는지 체크한다.
-        - 해당 사번이 존재하지 않을 때의 반환값이 어떻게 나오는지 체크해야 합니다.
-3. 2번에서 존재하지 않는다고 알려진 사번들을 리스트로 받아와 모니터링 툴의 알람 사용자 리스트에서 제거한다.
+### SearchControls 클래스
+
+`sc.setSearchScope(SearchControls.SUBTREE_SCOPE)`
+
+### NamingEnumeration 클래스
+
+`public interface NamingEnumeration<T>`
+
+NamingEnumeration 인터페이스는 `javax.naming` 및 [`javax.naming.directory`](http://javax.naming.directory) 패키지의 메소드가 리턴한 목록을 열거하기 위한 것입니다.
+
+- list(), listBindings() 또는 search()와 같은 메소드가 NamingEnumeration을 반환하면 모든 결과가 반환될 때까지 발생한 예외가 나지 않고 있다가, 모든 결과 반환 후 예외가 발생합니다(hasMore()에 의함).
+
+`NamingEnumeration<SearchResult> results = ctx.search(baseRdn,  searchStr, sc);`
+
+`SearchResult result = (SearchResult) results.next();`
+
+### SearchResult 클래스
+
+`SearchResult` 클래스는 Active Directory 도메인 서비스 계층 구조에서 `DirectorySearcher`를 통해 검색하는 동안 반환되는 노드를 캡슐화합니다.
+
+`Public class SearchResult`
+
+- Object -> SearchResult 상속
+
+## LDAP search 사용 코드 예시
+
+### LDAP 내 존재하지 않는 사번 리스트 반환 함수
+
+```java
+public List<String> checkNotInLdapUserId(List<String> smsUserIdList) {
+		
+		String user = "cn=[ 사용할 admin id ],cn=[ 사용할 admin id ],dc=[ 사용할 admin id ],dc=com"; // 사용할 admin id 
+		String passwd = "[ 사용할 admin pwd ]"; // 사용할 admin pwd
+		String ldapUrl = "ldap://[ LDAP 서버 IP 또는 도메인 ]:[ LDAP 포트 ]/"; // ldap 서버에서 사용하는 IP
+		
+		try {
+			String baseRdn = "dc=[ 사용할 admin id ],dc=[ 사용할 admin id ]";
+
+			Hashtable<String, String> env = new Hashtable<String, String>();
+			env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+			env.put(Context.PROVIDER_URL, ldapUrl);
+			env.put(Context.SECURITY_AUTHENTICATION, "simple");
+			env.put(Context.SECURITY_PRINCIPAL, user);
+			env.put(Context.SECURITY_CREDENTIALS, passwd);
+			LdapContext ctx = new InitialLdapContext(env, null);
+
+			logger.info("## Active Directory Connection Success.");
+
+			SearchControls sc = new SearchControls();
+			sc.setSearchScope(SearchControls.SUBTREE_SCOPE); // SUBTREE_SCORE: 기본 엔트리에서 시작하여 기본 엔트리 및 하위 값 모두 검색
+			sc.setReturningAttributes(new String[] {"cn", "uid"}); // uid(사번), cn(이름(사번))에 대해서만 가져오기 위해 ReturningAtrributes 설정
+			
+			String searchFilter = "(|"; // search filter 지정(검색어 지정)
+			// uid 검색 filter 예시
+			// searchStr = "(|(uid=156772)(uid=191398))";
+			for(String userid: smsUserIdList) {
+				String newUserId = "(uid=" + userid + ")";
+				searchFilter += newUserId;
+			}
+			searchFilter += ")"; 
+			
+			logger.info("* searchStr: " + searchFilter);
+			logger.info("* smsUserList length: " + smsUserIdList.size());
+			
+			int ldapUserLength = 0;
+			
+			NamingEnumeration<SearchResult> results = ctx.search(baseRdn, searchFilter, sc);
+			while (results.hasMore()) {
+				SearchResult result = (SearchResult) results.next();
+				Attributes attrs = result.getAttributes();
+				String userId = attrs.get("uid").toString().split("uid: ")[1]; // user id(사번)
+				//logger.info("cn : " + attrs.get("cn"));	
+				logger.info("* attrs: " + attrs);
+				smsUserIdList.remove(userId); // Ldap에 존재하는 사용자 사번 삭제
+				ldapUserLength ++;
+			}
+			
+			logger.info("\n### ldapUserList length: " + ldapUserLength + "###\n");
+			logger.info("\n### LIST of QUIT USER ID(quitUserLength: " + smsUserIdList.size() + ") ###\n");
+			for(String userid: smsUserIdList) {
+				logger.info("* userID: " + userid);
+			}
+			
+		}catch(AuthenticationException e){
+
+			String msg = e.getMessage();
+			
+			if (msg.indexOf("data 525") > 0) {             
+				logger.info("사용자를 찾을 수 없음.");
+			} else if (msg.indexOf("data 773") > 0) { 
+				logger.info("사용자는 암호를 재설정해야합니다.");
+			} else if (msg.indexOf("data 52e") > 0) {
+				logger.info("ID와 비밀번호가 일치하지 않습니다.확인 후 다시 시도해 주십시오.");
+			} else if (msg.indexOf("data 533") > 0) {
+				logger.info("입력한 ID는 비활성화 상태 입니다.");
+			} else if(msg.indexOf("data 532") > 0){
+				logger.info("암호가 만료되었습니다.");
+			} else if(msg.indexOf("data 701") > 0){
+				logger.info("AD에서 계정이 만료됨");
+			} else {
+				logger.info("Exception!!");
+			}
+			e.printStackTrace();
+			// 이 부분은 Active Directory와 JAVA가 연결 되지 않을 때의 예외처리입니다. 연결이 안되면 FAILED를 출력합니다.
+
+		}catch(Exception nex){
+			
+			System.out.println("Active Directory Connection: FAILED");
+			nex.printStackTrace();
+			
+		}
+		
+		return smsUserIdList;
+	}
+```
