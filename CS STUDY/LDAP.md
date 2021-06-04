@@ -164,7 +164,7 @@ public List<String> checkNotInLdapUserId(List<String> smsUserIdList) {
 
 			SearchControls sc = new SearchControls();
 			sc.setSearchScope(SearchControls.SUBTREE_SCOPE); // SUBTREE_SCORE: 기본 엔트리에서 시작하여 기본 엔트리 및 하위 값 모두 검색
-			sc.setReturningAttributes(new String[] {"cn", "uid"}); // uid(사번), cn(이름(사번))에 대해서만 가져오기 위해 ReturningAtrributes 설정
+			sc.setReturningAttributes(new String[] {"cn", "uid"}); // uid(사번), cn(이름(사번))에 대해서만 가져오기 위해 ReturningAtrributes 설정(모든 속성을 다 가져오려면 해당 라인은 주석처리 필요)
 			
 			String searchFilter = "(|"; // search filter 지정(검색어 지정)
 			// uid 검색 filter 예시
