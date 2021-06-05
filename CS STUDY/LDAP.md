@@ -140,8 +140,11 @@ NamingEnumeration 인터페이스는 `javax.naming` 및 [`javax.naming.directory
 
 ## LDAP search 사용 코드 예시
 
-### LDAP 내 존재하지 않는 사번 리스트 반환 함수
+### LDAP 내 존재하지 않는 사번 리스트 반환 메소드(checkNogInLdapUserId)
 
+- 사내에서 사용하는 모니터링 툴 알람 on/off를 사용자별로 진행하고 있습니다.
+- 해당 모니터링툴은 외부 솔루션인터라, 사내 LDAP과 연동되어 관리되고 있지 않습니다.
+- 이에 따라, 배치성으로 현재 모니터링 알람을 받고 있는 사용자 사번에 대해 사내 LDAP에 search를 하고 LDAP 내에 존재하지 않는 사번을 반환 받는 메소드를 생성했습니다.
 ```java
 public List<String> checkNotInLdapUserId(List<String> smsUserIdList) {
 		
