@@ -134,3 +134,46 @@ t._number
 
 - 일반적으로 초기화자(`__init__`)에서 객체의 불변성을 확립하는 것이 좋습니다.
 - 객체 생성 시 들어올 값에 대해 `__init__`에서 validation을 수행합니다.
+    - 아래 예시는, 첫 글자가 알파벳 대문자여야 하고 두번째 문자부터는 숫자(0보다 큰 정수)여야 생성되도록 validation을 수행합니다.
+
+    ```python
+    class Test:
+    	def __init__(self, number):
+    		if not number[:1].isalpha():
+    			raise ValueError("첫 글자가 알파벳이 아닙니다.")
+    		if not number[:1].isupper():
+    			raise ValueError("첫 글자가 대문자가 아닙니다.")
+    		if not number[1:].isdigit():
+    			raise ValueError("두번째 글자 이상이 숫자가 아닙니다.")
+    		self._number = number
+
+    	def number(self):
+    		return self._number
+
+    # 테스트 결과 예시
+    >>> class Test:
+    ...     def __init__(self, number):
+    ...             if not number[:1].isalpha():
+    ...                     raise ValueError("첫 글자가 알파벳이 아닙니다.")
+    ...             if not number[:1].isupper():
+    ...                     raise ValueError("첫 글자가 대문자가 아닙니다.")
+    ...             if not number[1:].isdigit():
+    ...                     raise ValueError("두번째 글자 이상이 숫자가 아닙니다.")
+    ...             self._number = number
+    ... 
+    >>> t = Test("abc")
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File "<stdin>", line 6, in __init__
+    ValueError: 첫 글자가 대문자가 아닙니다.
+    >>> t = Test("Abc")
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File "<stdin>", line 8, in __init__
+    ValueError: 두번째 글자 이상이 숫자가 아닙니다.
+    >>> t = Test("A2c")
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File "<stdin>", line 8, in __init__
+    ValueError: 두번째 글자 이상이 숫자가 아닙니다.
+    ```
