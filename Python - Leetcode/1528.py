@@ -17,7 +17,6 @@ from typing import List
 class Solution:
     def restoreString(self, s: str, indices: List[int]) -> str:
         new_s = list()
-        ans = ""
         for i in s:
             new_s.append(i)
         
