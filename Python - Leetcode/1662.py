@@ -18,7 +18,7 @@ generator를 사용한 풀이는, 풀이 1은 시간 복잡도가 O(n + m)인 �
 from typing import List
 
 class Solution:
-    def arrayStringAreEqual(self, word1: List[str], word2: List[str]) -> bool:
+    def arrayStringsAreEqual(self, word1: List[str], word2: List[str]) -> bool:
         for a, b in zip(self.generator(word1), self.generator(word2)):
             if a != b:
                 return False
