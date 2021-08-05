@@ -15,3 +15,6 @@ class Solution:
         if len(s) % 2 == 1:
             ans.append(s[-1])
         return "".join(ans)
+
+ans = Solution()
+print(ans.replaceDigits("a1b2c3d4e"))
