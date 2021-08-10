@@ -17,4 +17,4 @@ set sex = case when sex = 'm' then 'f' else 'm' end
 => A + B - B = A (B -> A)
 '''
 update salary
-set sex = char(ascii('m') + ascii('f') - ascii(`sex`)) 
+set sex = char(ascii('m') + ascii('f') - ascii(sex)) 
