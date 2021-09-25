@@ -3,4 +3,4 @@ branches:
   - label: '*'
     prefix: feature/
 autoCloseIssue: true
-commitMessage: 'Branch ${branchName} created for issue: ${issue.title} :)'
+commitMessage: 'Hello! Branch ${branchName} created for issue: ${issue.title} :)'
