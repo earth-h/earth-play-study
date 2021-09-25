@@ -1,13 +1,15 @@
 name: Create Issue Branch
 on:
   issues:
-    types: [ assgined ]
+    types: [ assigned ]
   issue_comment:
     types: [ created ]
+  pull_request:
+    types: [ closed ]
 
 jobs:
   create_issue_branch_job:
-    runs-on: ubuntu-lastes
+    runs-on: ubuntu-latest
     steps:
       - name: Create Issue Branch
         uses: robvanderleek/create-issue-branch@main
