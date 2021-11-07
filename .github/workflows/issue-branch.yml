@@ -1,0 +1,17 @@
+name: Create Issue Branch
+on:
+  issues:
+    types: [ assgined ]
+  issue_comment:
+    types: [ created ]
+
+jobs:
+  create_issue_branch_job:
+    runs-on: ubuntu-lastes
+    steps:
+      - name: Create Issue Branch
+        uses: robvanderleek/create-issue-branch@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Echo branch name
+        run: echo ${{ steps.Create_Issue_Branch.outputs.branchName }}
