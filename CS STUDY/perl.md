@@ -50,3 +50,10 @@ namenumber
 namenumber
 name/numberTEST
 ```
+
+**[ 추가 내용 ]**
+실 작업을 할 때에 위 예시처럼 @ARGV의 각 값을 my 변수로 받았습니다. 그런데, global 변수 관련 에러가 발생하였고, 이에 아래와 같이 수정하여 작업하였습니다.
+```perl
+my @argv_list = @argv;
+my ($first, $second) = @argv_list;
+```
