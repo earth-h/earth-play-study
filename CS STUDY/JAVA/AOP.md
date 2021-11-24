@@ -40,7 +40,7 @@ dependencies {
 public class PerfAspect {
 
     @Around("execution(* com.earth..*.EventService.*(..))")
-    public Object logPerf(ProceedingJoinPoint pjp) throws TRhrowable {
+    public Object logPerf(ProceedingJoinPoint pjp) throws Throwable {
         long begin = System.currentTimeMillis();
         Object retVal = pjp.proceed(); // 메소드 호출 자체를 감쌈
         System.out.println(System.currentTimeMillis() - begin);
