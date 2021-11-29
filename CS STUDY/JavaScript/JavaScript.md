@@ -1,5 +1,191 @@
 ## 호이스팅
+컴파일 단계 동안, 코드가 실행되기 마이크로 초 전, 함수와 변수 선언이 스캔됩니다. 모든 함수와 변수 선언들은 lexical 환경이라 불리는 자바스크립트 데이터 구조 내의 메모리에 추가됩니다. 그리고 소스 코드 내 실제 선언되기 전일지라도 사용할 수 있게 됩니다.
 
+이러한 일련 과정을 **호이스팅**이라고 합니다.
+
+### lexical 환경이란 무엇일까?
+lexical 환경은 identifier - value 매핑 데이터 구조를 의미합니다.
+* identifier(식별자): 변수/함수의 이름을 참조
+* value(변수/함수명): 실제 객체(포함된 함수 객체) 또는 원시값을 참조
+
+```javascript
+LexicalEnvironment = {
+    Identifier: <value>,
+    Identifier: <function object>
+}
+```
+
+즉 lexical 환경은 프로그램이 실행되는 동안 변수와 함수가 존재하는 장소입니다.
+
+### 호이스팅 함수 선언
+
+```javascript
+helloWorld()
+function helloWorld() {
+    console.log('Hello World!')
+}
+```
+컴파일 단계에서 함수 선언이 메모리에 추가된다는 것을 알고 있기 때문에 위와 같이 실제 함수 선언 전 우리는 코드로 해당 선언을 접근할 수 있습니다.
+
+이 경우, lexical 환경은 아래와 같습니다.
+```javascript
+lexicalEnvironment = {
+    helloWorld: < func >
+}
+```
+* 자바스크립트 엔진이 helloWorld() 호출을 접하게 되면 lexical 환경 내부를 살펴보고, 함수를 찾은 후 실행 시킬 수 있게 됩니다.
+
+### 함수 표현식 호이스팅
+오직 함수 선언부만이 자바스크립트 내부에서 호이스트되고, 함수 표현식은 호이스트되지 않습니다. 
+
+예를 들어, 아래 코드는 동작하지 않습니다.
+
+```javascript
+helloWorld() // TypeError: helloWorld is not a function
+var helloWorld = function() {
+    console.log('Hello World!')
+}
+```
+
+자바스크립트는 오직 선언부만을 호이스트하고, 초기화하지 않습니다. 그래서 helloWorld는 함수가 아닌 변수로 취급받습니다. 
+* helloWorld는 var 변수이기에 엔진은 호이스팅 동안 undefined 값을 할당하게 됩니다.
+
+위 코드를 에러 없이 제대로 호출하기 위해서는 아래와 같이 작성해야 합니다.
+```javascript
+var helloWorld = function() {
+    console.log('Hello World')
+}
+helloWorld()
+```
+
+### var 변수 호이스팅
+```javascript
+console.log(a) // 'undefined' 출력
+var a = 3;
+```
+
+자바스크립트는 초기화가 아닌 오직 선언부만을 호이스팅합니다. 즉 컴파일하는 동안, 자바스크립트는 할당값 대신 오직 함수와 변수 선언부만을 저장합니다. 
+
+**[ undefined인 이유 ]**
+
+자바스크립트 엔진이 컴파일 단계에서 var 변수 선언을 발견하면, 그 변수를 lexical 환경에 추가하고 코드에서 실제 할당이 이루어지는 라인에 도달한 뒤 undefined 변수에 그 값을 할당하여 초기화합니다.
+
+**[ 위 상황의 초기 Lexical 환경 ]**
+```javascript
+lexicalEnvironment = {
+    a: undefined
+}
+```
+
+**[ 자바스크립트 엔진이 실제 할당을 끝낸 후 ]**
+```javascript
+lexicalEnvironment = {
+    a: 3
+}
+```
+
+### let과 const 변수 호이스팅
+```javascript
+console.log(a) // ReferenceError: a is not defined
+let a = 3
+```
+
+모든 선언(function, var, let, const 및 class)은 자바스크립트에서 호이스팅되며, `var 선언`은 <u>**undefined로 초기화**</u>되지만 `let 및 const 선언`은 <u>**초기화되지 않은 상태로 유지**</u>됩니다.
+* let과 const 및 class는 오직 lexical 바인딩(할당)이 자바스크립트 엔진 런타임 도중 평가될때에만 초기화가 됩니다. 즉, 자바스크립트 엔진이 소스코드에서 선언된 위치에 있는 변수를 평가하기 전까지 접근할 수 없다는 것입니다.
+  * 이는 TDZ(Temporal Dead Zone)이라 불리며, **변수 생성과 접근불가한 곳이 초기화되기까지의 시간 간격**을 의미합니다.
+
+만약 자바스크립트 엔진이 let, const 값이 선언된 라인에서 찾기 못하면, undefined 값을 할당하거나 error(const일 경우)를 반환합니다.
+```javascript
+let a
+console.log(a) // outputs undefined
+a = 5
+```
+* 컴파일 단계에서 자바스크립트 엔진은 변수 a와 마주쳐 lexical 환경에 저장하지만, let 변수이기 때문에 엔진은 어떤 값으로도 초기화하지 않습니다.
+
+위 경우의 컴파일 단계에서의 lexical 환경은 아래와 같습니다.
+```javascript
+lexicalEnvironment = {
+    a: <uninitialized>
+}
+```
+
+* 만약 선언 전 변수에 접근하게 되면, 자바스크립트 엔진은 변수가 초기화되지 않았기 때문에 lexical 환경에서 변수의 값을 가져오려 하고, 이에 참조 에러가 발생합니다.
+
+* 반면, 실행 중 엔진이 변수가 선언된 라인에 접근하면, 바인딩(값)을 평가하려고 시도할 것입니다. 이때 위와 같이 선언만 먼저 되고, 값이 나중에 바인딩되면 선언된 위치에서는 변수와 연관된 값을 찾지 못해 undefined를 할당합니다. 
+
+### class 선언 호이스팅
+let과 const 선언같이 자바스크립트의 class 또한 호이스팅되나, 컴파일 시점에는 초기화되지 않은 상태로 유지됩니다.
+
+```javascript
+let peter = new Person('Peter', 25)
+// ReferenceError: Person is not defined
+
+console.log(peter)
+
+class Person {
+    constructor(name, age) {
+        this.name = name
+        this.age = age
+    }
+}
+```
+이로 인해 class에 접근하기 위해서는 먼저 선언을 해야 합니다.
+
+```javascript
+class Person {
+    constructor(name, age) {
+        this.name = name
+        this.age = age
+    }    
+}
+let peter = new Person('Peter', 25)
+console.log(peter) // Person { name: 'Peter', age: 25 }
+```
+
+위 코드의 컴파일 단계에서 lexical 환경은 아래와 같습니다.
+```javascript
+lexicalEnvironment = {
+    Person: <uninitialized>
+}
+```
+자바스크립트 엔진에 의해 class가 초기화 되면 아래와 같이 lexical 환경이 바뀝니다.
+```javascript
+lexicalEnvironment = {
+    Person: <Person object>
+}
+```
+
+### class 표현식 호이스팅
+함수 표현식처럼, class 표현식은 호이스팅되지 않습니다.
+예를 들어, 아래와 같은 코드는 동작하지 않습니다.
+```javascript
+let peter = new Person('Peter', 25)
+// ReferenceError: Person is not defined
+
+console.log(peter)
+let Person = class {
+    constructor(name, age) {
+        this.name = name
+        this.age = age
+    }
+}
+```
+위 코드를 올바르게 고치면 다음과 같습니다.
+```javascript
+let Person = class {
+    constructor(name, age) {
+        this.name = name
+        this.age = age
+    }
+}
+
+let peter = new Person('Peter', 25)
+console.log(peter) // Person { name: 'Peter', age: 25 }
+```
+
+### 호이스팅 착각하면 안되는 점
+호이스팅은 자바스크립트가 현재 scope(함수 또는 전역)의 최상단으로 선언부(변수 및 함수)를 이동시키는 행위가 아니라는 점을 명심해야 합니다.
+* 비록 호이스팅이 선언부를 코드 상단으로 올리는 것과 같이 느껴질 수 있으나, 실제로 코드가 움직이는 것은 아닙니다.
 
 ## 함수 표현식 VS 함수 선언식
 ### 함수 선언식(Function Declaration)
