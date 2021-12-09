@@ -1,2 +1,1 @@
-# earth-TIL-algorithm
-History of my TIL algorithm
+# earth-play-study
